@@ -1,0 +1,144 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>AR Video Try-On</title>
+  <script src="https://aframe.io/releases/1.5.0/aframe.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/mind-ar@1.2.5/dist/mindar-image-aframe.prod.js"></script>
+  <style>
+    body {
+      margin: 0;
+      font-family: 'Poppins', sans-serif;
+      background: #000;
+    }
+
+    #logo {
+      position: absolute;
+      top: 16px;
+      left: 16px;
+      width: 100px;
+      z-index: 100;
+    }
+
+    .button-panel {
+      position: absolute;
+      bottom: 20px;
+      left: 50%;
+      transform: translateX(-50%);
+      display: none;
+      z-index: 100;
+    }
+
+    .plan-button {
+      padding: 12px 24px;
+      font-size: 15px;
+      font-weight: bold;
+      border: none;
+      border-radius: 8px;
+      background-color: #5E0F8B;
+      color: #fff;
+      cursor: pointer;
+      min-width: 160px;
+      transition: background 0.3s;
+    }
+
+    .plan-button:hover {
+      background-color: #7a17b8;
+    }
+
+    .a-enter-vr-button {
+      display: none !important;
+    }
+  </style>
+</head>
+<body>
+
+  <!-- Logo -->
+  <img src="logo.png" id="logo" alt="Logo">
+
+  <!-- Play/Pause Button -->
+  <div class="button-panel" id="planButtons">
+    <button class="plan-button" id="toggleButton">▶️ Play Video</button>
+  </div>
+
+  <!-- AR Scene -->
+  <a-scene 
+    mindar-image="imageTargetSrc: ./targets.mind" 
+    color-space="sRGB" 
+    renderer="colorManagement: true, physicallyCorrectLights, antialias: true" 
+    vr-mode-ui="enabled: false" 
+    device-orientation-permission-ui="enabled: false">
+
+    <a-assets>
+      <video id="plan1Video" src="plan1.mp4" playsinline preload="auto" loop></video>
+    </a-assets>
+
+    <a-camera position="0 0 0" look-controls="enabled: false"></a-camera>
+
+    <a-entity id="target1" mindar-image-target="targetIndex: 0">
+      <a-plane 
+        id="videoDisplay" 
+        position="0 0 0" 
+        width="1" 
+        height=".59" 
+        material="shader: flat">
+      </a-plane>
+    </a-entity>
+  </a-scene>
+
+  <script>
+    const videoDisplay = document.querySelector('#videoDisplay');
+    const videoEl = document.querySelector('#plan1Video');
+    const buttonsContainer = document.querySelector('#planButtons');
+    const toggleButton = document.querySelector('#toggleButton');
+    const target = document.querySelector('#target1');
+
+    let isPlaying = false;
+
+    // Show button when target is found
+    target.addEventListener('targetFound', () => {
+      buttonsContainer.style.display = 'block';
+    });
+
+    // Hide button & pause video when target is lost
+    target.addEventListener('targetLost', () => {
+      buttonsContainer.style.display = 'none';
+      videoEl.pause();
+      isPlaying = false;
+      toggleButton.textContent = "▶️ Play Video";
+    });
+
+    // Toggle play/pause on button click
+    toggleButton.addEventListener('click', () => {
+      if (!isPlaying) {
+        videoDisplay.setAttribute('material', 'src', '#plan1Video');
+        videoEl.play();
+        isPlaying = true;
+        toggleButton.textContent = "⏸ Pause Video";
+      } else {
+        videoEl.pause();
+        isPlaying = false;
+        toggleButton.textContent = "▶️ Play Video";
+      }
+    });
+
+    // 🚫 Disable Right-Click
+    document.addEventListener("contextmenu", (e) => e.preventDefault());
+
+    // 🚫 Disable Inspect Element & Dev Tools Shortcuts
+    document.addEventListener("keydown", (e) => {
+      if (
+        e.key === "F12" || // F12
+        (e.ctrlKey && e.shiftKey && e.key === "I") || // Ctrl+Shift+I
+        (e.ctrlKey && e.shiftKey && e.key === "J") || // Ctrl+Shift+J
+        (e.ctrlKey && e.key === "u") || // Ctrl+U (view source)
+        (e.ctrlKey && e.shiftKey && e.key === "C") // Ctrl+Shift+C (inspect)
+      ) {
+        e.preventDefault();
+        alert("🚫 Action Disabled!");
+      }
+    });
+  </script>
+</body>
+</html>
