@@ -14,36 +14,45 @@
       margin: 0;
       font-family: 'Poppins', sans-serif;
       background: #000;
+      overflow: hidden;
     }
 
+    /* Logo (hidden initially) */
     #logo {
       position: absolute;
       top: 16px;
       left: 16px;
       width: 100px;
       z-index: 100;
+      opacity: 0;
+      pointer-events: none;
+      transition: opacity 0.4s ease;
     }
 
+    /* Buttons Container (hidden initially) */
     .button-panel {
       position: absolute;
       bottom: 20px;
       left: 50%;
       transform: translateX(-50%);
-      display: none;
+      opacity: 0;
+      pointer-events: none;
       z-index: 100;
       display: flex;
       flex-wrap: wrap;
       gap: 10px;
       justify-content: center;
+      transition: opacity 0.4s ease;
     }
 
+    /* Buttons */
     .plan-button {
       padding: 12px 20px;
       font-size: 15px;
       font-weight: bold;
       border: none;
       border-radius: 8px;
-      background-color: #5E0F8B;
+      background-color: rgba(0, 0, 0, 0.3); /* black with 30% transparency */
       color: #fff;
       cursor: pointer;
       min-width: 160px;
@@ -51,7 +60,13 @@
     }
 
     .plan-button:hover {
-      background-color: #7a17b8;
+      background-color: rgba(0, 0, 0, 0.5); /* slightly darker on hover */
+    }
+
+    /* Play button on top */
+    #toggleButton {
+      flex-basis: 100%; /* Moves play button above other buttons */
+      margin-bottom: 8px; /* Small gap below it */
     }
 
     /* WhatsApp Floating Button */
@@ -63,13 +78,15 @@
       border-radius: 50%;
       width: 55px;
       height: 55px;
+      opacity: 0;
+      pointer-events: none;
       display: flex;
       justify-content: center;
       align-items: center;
       cursor: pointer;
       z-index: 150;
       box-shadow: 0 2px 8px rgba(0,0,0,0.3);
-      display: none;
+      transition: opacity 0.4s ease;
     }
 
     #whatsappBtn img {
@@ -77,6 +94,7 @@
       height: 30px;
     }
 
+    /* Hide VR button */
     .a-enter-vr-button {
       display: none !important;
     }
@@ -95,17 +113,17 @@
     <button class="plan-button" onclick="window.open('https://yourjewelsite.com')">🌐 Website</button>
   </div>
 
-  <!-- WhatsApp Button -->
+  <!-- WhatsApp Floating Button -->
   <div id="whatsappBtn" onclick="window.open('https://wa.me/919999999999','_blank')">
     <img src="https://upload.wikimedia.org/wikipedia/commons/6/6b/WhatsApp.svg" alt="WhatsApp">
   </div>
 
   <!-- AR Scene -->
-  <a-scene 
-    mindar-image="imageTargetSrc: ./targets.mind" 
-    color-space="sRGB" 
-    renderer="colorManagement: true, physicallyCorrectLights, antialias: true" 
-    vr-mode-ui="enabled: false" 
+  <a-scene
+    mindar-image="imageTargetSrc: ./targets.mind"
+    color-space="sRGB"
+    renderer="colorManagement: true; physicallyCorrectLights: true; antialias: true"
+    vr-mode-ui="enabled: false"
     device-orientation-permission-ui="enabled: false">
 
     <a-assets>
@@ -114,12 +132,13 @@
 
     <a-camera position="0 0 0" look-controls="enabled: false"></a-camera>
 
+    <!-- Image Target -->
     <a-entity id="target1" mindar-image-target="targetIndex: 0">
-      <a-plane 
-        id="videoDisplay" 
-        position="0 0 0" 
-        width="1" 
-        height="1.7" 
+      <a-plane
+        id="videoDisplay"
+        position="0 0 0"
+        width="1"
+        height="1.7"
         material="shader: flat">
       </a-plane>
     </a-entity>
@@ -132,25 +151,39 @@
     const toggleButton = document.querySelector('#toggleButton');
     const target = document.querySelector('#target1');
     const whatsappBtn = document.querySelector('#whatsappBtn');
+    const logo = document.querySelector('#logo');
 
     let isPlaying = false;
 
-    // Show buttons when target found
+    // ✅ Show elements only when target is found
     target.addEventListener('targetFound', () => {
-      buttonsContainer.style.display = 'flex';
-      whatsappBtn.style.display = 'flex';
+      buttonsContainer.style.opacity = '1';
+      buttonsContainer.style.pointerEvents = 'auto';
+
+      whatsappBtn.style.opacity = '1';
+      whatsappBtn.style.pointerEvents = 'auto';
+
+      logo.style.opacity = '1';
+      logo.style.pointerEvents = 'auto';
     });
 
-    // Hide buttons when target lost
+    // ❌ Hide elements when target is lost
     target.addEventListener('targetLost', () => {
-      buttonsContainer.style.display = 'none';
-      whatsappBtn.style.display = 'none';
+      buttonsContainer.style.opacity = '0';
+      buttonsContainer.style.pointerEvents = 'none';
+
+      whatsappBtn.style.opacity = '0';
+      whatsappBtn.style.pointerEvents = 'none';
+
+      logo.style.opacity = '0';
+      logo.style.pointerEvents = 'none';
+
       videoEl.pause();
       isPlaying = false;
       toggleButton.textContent = "▶️ Play Video";
     });
 
-    // Toggle video play/pause
+    // ▶️ Play / ⏸ Pause toggle
     toggleButton.addEventListener('click', () => {
       if (!isPlaying) {
         videoDisplay.setAttribute('material', 'src', '#plan1Video');
@@ -164,10 +197,10 @@
       }
     });
 
-    // Disable Right-Click
+    // 🚫 Disable right click
     document.addEventListener("contextmenu", (e) => e.preventDefault());
 
-    // Disable Inspect Element Shortcuts
+    // 🚫 Disable inspect element
     document.addEventListener("keydown", (e) => {
       if (
         e.key === "F12" ||
@@ -177,7 +210,6 @@
         (e.ctrlKey && e.shiftKey && e.key === "C")
       ) {
         e.preventDefault();
-        alert("🚫 Action Disabled!");
       }
     });
   </script>
