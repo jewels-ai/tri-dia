@@ -4,8 +4,11 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1" />
   <title>AR Video Try-On</title>
+
+  <!-- A-Frame & MindAR -->
   <script src="https://aframe.io/releases/1.5.0/aframe.min.js"></script>
   <script src="https://cdn.jsdelivr.net/npm/mind-ar@1.2.5/dist/mindar-image-aframe.prod.js"></script>
+
   <style>
     body {
       margin: 0;
@@ -52,8 +55,8 @@
     }
   </style>
 </head>
-<body>
 
+<body>
   <!-- Logo -->
   <img src="logo.png" id="logo" alt="Logo">
 
@@ -71,17 +74,19 @@
     device-orientation-permission-ui="enabled: false">
 
     <a-assets>
+      <!-- Replace with your actual video -->
       <video id="plan1Video" src="plan1.mp4" playsinline preload="auto" loop></video>
     </a-assets>
 
     <a-camera position="0 0 0" look-controls="enabled: false"></a-camera>
 
+    <!-- Image Target with Plane Matching Uploaded Image Ratio -->
     <a-entity id="target1" mindar-image-target="targetIndex: 0">
       <a-plane 
         id="videoDisplay" 
         position="0 0 0" 
         width="1" 
-        height=".59" 
+        height="0.563" 
         material="shader: flat">
       </a-plane>
     </a-entity>
@@ -129,11 +134,11 @@
     // 🚫 Disable Inspect Element & Dev Tools Shortcuts
     document.addEventListener("keydown", (e) => {
       if (
-        e.key === "F12" || // F12
-        (e.ctrlKey && e.shiftKey && e.key === "I") || // Ctrl+Shift+I
-        (e.ctrlKey && e.shiftKey && e.key === "J") || // Ctrl+Shift+J
-        (e.ctrlKey && e.key === "u") || // Ctrl+U (view source)
-        (e.ctrlKey && e.shiftKey && e.key === "C") // Ctrl+Shift+C (inspect)
+        e.key === "F12" ||
+        (e.ctrlKey && e.shiftKey && e.key === "I") ||
+        (e.ctrlKey && e.shiftKey && e.key === "J") ||
+        (e.ctrlKey && e.key === "u") ||
+        (e.ctrlKey && e.shiftKey && e.key === "C")
       ) {
         e.preventDefault();
         alert("🚫 Action Disabled!");
