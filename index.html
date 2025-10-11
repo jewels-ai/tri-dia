@@ -31,10 +31,14 @@
       transform: translateX(-50%);
       display: none;
       z-index: 100;
+      display: flex;
+      flex-wrap: wrap;
+      gap: 10px;
+      justify-content: center;
     }
 
     .plan-button {
-      padding: 12px 24px;
+      padding: 12px 20px;
       font-size: 15px;
       font-weight: bold;
       border: none;
@@ -50,6 +54,29 @@
       background-color: #7a17b8;
     }
 
+    /* WhatsApp Floating Button */
+    #whatsappBtn {
+      position: fixed;
+      bottom: 20px;
+      right: 20px;
+      background-color: #25D366;
+      border-radius: 50%;
+      width: 55px;
+      height: 55px;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      cursor: pointer;
+      z-index: 150;
+      box-shadow: 0 2px 8px rgba(0,0,0,0.3);
+      display: none;
+    }
+
+    #whatsappBtn img {
+      width: 30px;
+      height: 30px;
+    }
+
     .a-enter-vr-button {
       display: none !important;
     }
@@ -60,9 +87,17 @@
   <!-- Logo -->
   <img src="logo.png" id="logo" alt="Logo">
 
-  <!-- Play/Pause Button -->
+  <!-- Buttons Panel -->
   <div class="button-panel" id="planButtons">
     <button class="plan-button" id="toggleButton">▶️ Play Video</button>
+    <button class="plan-button" onclick="window.location.href='https://yourjewelsite.com'">🌟 Try Our Jewels</button>
+    <button class="plan-button" onclick="window.open('https://maps.google.com/?q=Your+Store+Location')">📍 Location</button>
+    <button class="plan-button" onclick="window.open('https://yourjewelsite.com')">🌐 Website</button>
+  </div>
+
+  <!-- WhatsApp Button -->
+  <div id="whatsappBtn" onclick="window.open('https://wa.me/919999999999','_blank')">
+    <img src="https://upload.wikimedia.org/wikipedia/commons/6/6b/WhatsApp.svg" alt="WhatsApp">
   </div>
 
   <!-- AR Scene -->
@@ -74,13 +109,11 @@
     device-orientation-permission-ui="enabled: false">
 
     <a-assets>
-      <!-- Replace with your actual video -->
       <video id="plan1Video" src="plan1.mp4" playsinline preload="auto" loop></video>
     </a-assets>
 
     <a-camera position="0 0 0" look-controls="enabled: false"></a-camera>
 
-    <!-- Image Target with Plane Matching Uploaded Image Ratio -->
     <a-entity id="target1" mindar-image-target="targetIndex: 0">
       <a-plane 
         id="videoDisplay" 
@@ -98,23 +131,26 @@
     const buttonsContainer = document.querySelector('#planButtons');
     const toggleButton = document.querySelector('#toggleButton');
     const target = document.querySelector('#target1');
+    const whatsappBtn = document.querySelector('#whatsappBtn');
 
     let isPlaying = false;
 
-    // Show button when target is found
+    // Show buttons when target found
     target.addEventListener('targetFound', () => {
-      buttonsContainer.style.display = 'block';
+      buttonsContainer.style.display = 'flex';
+      whatsappBtn.style.display = 'flex';
     });
 
-    // Hide button & pause video when target is lost
+    // Hide buttons when target lost
     target.addEventListener('targetLost', () => {
       buttonsContainer.style.display = 'none';
+      whatsappBtn.style.display = 'none';
       videoEl.pause();
       isPlaying = false;
       toggleButton.textContent = "▶️ Play Video";
     });
 
-    // Toggle play/pause on button click
+    // Toggle video play/pause
     toggleButton.addEventListener('click', () => {
       if (!isPlaying) {
         videoDisplay.setAttribute('material', 'src', '#plan1Video');
@@ -128,10 +164,10 @@
       }
     });
 
-    // 🚫 Disable Right-Click
+    // Disable Right-Click
     document.addEventListener("contextmenu", (e) => e.preventDefault());
 
-    // 🚫 Disable Inspect Element & Dev Tools Shortcuts
+    // Disable Inspect Element Shortcuts
     document.addEventListener("keydown", (e) => {
       if (
         e.key === "F12" ||
