@@ -4,6 +4,8 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <title>AR Video Try-On</title>
+
+  <!-- A-Frame & MindAR -->
   <script src="https://aframe.io/releases/1.5.0/aframe.min.js"></script>
   <script src="https://cdn.jsdelivr.net/npm/mind-ar@1.2.5/dist/mindar-image-aframe.prod.js"></script>
 
@@ -116,7 +118,7 @@
       display: none !important;
     }
 
-    /* 📱 Responsive Adjustments */
+    /* Responsive */
     @media (max-width: 480px) {
       .plan-button {
         padding: 12px 18px;
@@ -139,18 +141,18 @@
   <!-- Play Video -->
   <button class="plan-button" id="toggleButton">▶️ Play Video</button>
 
-  <!-- Try on Jewellery (Bottom Left) -->
+  <!-- Try on Jewellery -->
   <button class="plan-button" id="tryJewelsBtn" onclick="window.location.href='https://jewels-ai.github.io/Jewellery_Demo/'">
     🌟 Try on Jewellery
   </button>
 
-  <!-- Savings Plan (Bottom Center) -->
+  <!-- Savings Plan -->
   <button class="plan-button" id="savingsBtn" onclick="window.open('https://jewels-ai.github.io/savings-plan/')">
     💰 Savings Plan
   </button>
 
   <!-- Location (Top Right) -->
-  <button class="plan-button" id="locationBtn" onclick="window.open('https://maps.google.com/?q=Your+Store+Location')">
+  <button class="plan-button" id="locationBtn" onclick="window.open('https://maps.app.goo.gl/U3cmv1V6CV9e95QB8')">
     📍 Location
   </button>
 
@@ -160,11 +162,11 @@
   </div>
 
   <!-- AR Scene -->
-  <a-scene 
-    mindar-image="imageTargetSrc: ./targets.mind" 
-    color-space="sRGB" 
-    renderer="colorManagement: true, physicallyCorrectLights, antialias: true" 
-    vr-mode-ui="enabled: false" 
+  <a-scene
+    mindar-image="imageTargetSrc: ./targets.mind; filterMinCF: 0.0001; filterBeta: 0.001"
+    renderer="colorManagement: false; physicallyCorrectLights: false; antialias: true; logarithmicDepthBuffer: true"
+    loading-screen="enabled: false"
+    vr-mode-ui="enabled: false"
     device-orientation-permission-ui="enabled: false">
 
     <a-assets>
@@ -173,12 +175,19 @@
 
     <a-camera position="0 0 0" look-controls="enabled: false"></a-camera>
 
-    <a-entity id="target1" mindar-image-target="targetIndex: 0">
-      <a-plane 
-        id="videoDisplay" 
-        position="0 0 0" 
-        width="1" 
-        height="0.56" 
+    <a-entity
+      id="target1"
+      mindar-image-target="targetIndex: 0"
+      smooth="true"
+      smoothCount="10"
+      smoothTolerance="0.01"
+      smoothThreshold="5">
+
+      <a-plane
+        id="videoDisplay"
+        position="0 0 0"
+        width="1"
+        height="0.56"
         material="shader: flat">
       </a-plane>
     </a-entity>
@@ -198,7 +207,6 @@
 
     let isPlaying = false;
 
-    // ✅ Show buttons & logo when target is found
     target.addEventListener('targetFound', () => {
       [toggleButton, tryJewelsBtn, savingsBtn, locationBtn, whatsappBtn, logo].forEach(el => {
         el.style.opacity = '1';
@@ -206,7 +214,6 @@
       });
     });
 
-    // ❌ Hide buttons when target is lost
     target.addEventListener('targetLost', () => {
       [toggleButton, tryJewelsBtn, savingsBtn, locationBtn, whatsappBtn, logo].forEach(el => {
         el.style.opacity = '0';
@@ -217,7 +224,6 @@
       toggleButton.textContent = "▶️ Play Video";
     });
 
-    // ▶️ Play / ⏸ Pause toggle
     toggleButton.addEventListener('click', () => {
       if (!isPlaying) {
         videoDisplay.setAttribute('material', 'src', '#plan1Video');
@@ -231,16 +237,13 @@
       }
     });
 
-    /* 🚫 Disable Right-click */
     document.addEventListener("contextmenu", (e) => e.preventDefault());
-
-    /* 🚫 Disable Inspect Element & Common Dev Shortcuts */
     document.addEventListener("keydown", (e) => {
       if (
-        e.key === "F12" || 
-        (e.ctrlKey && e.shiftKey && e.key === "I") || 
-        (e.ctrlKey && e.shiftKey && e.key === "J") || 
-        (e.ctrlKey && e.key === "u") || 
+        e.key === "F12" ||
+        (e.ctrlKey && e.shiftKey && e.key === "I") ||
+        (e.ctrlKey && e.shiftKey && e.key === "J") ||
+        (e.ctrlKey && e.key === "u") ||
         (e.ctrlKey && e.shiftKey && e.key === "C")
       ) {
         e.preventDefault();
