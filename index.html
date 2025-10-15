@@ -17,62 +17,82 @@
       overflow: hidden;
     }
 
-    /* Logo (hidden initially) */
+    /* Logo */
     #logo {
       position: absolute;
-      top: 16px;
-      left: 16px;
+      top: 0px;
+      left: 0px;
       width: 100px;
-      z-index: 100;
+      z-index: 200;
       opacity: 0;
       pointer-events: none;
       transition: opacity 0.4s ease;
     }
 
-    /* Buttons Container (hidden initially) */
-    .button-panel {
+    /* Play Button */
+    #toggleButton {
       position: absolute;
-      bottom: 20px;
+      bottom: 90px;
       left: 50%;
       transform: translateX(-50%);
       opacity: 0;
       pointer-events: none;
       z-index: 100;
-      display: flex;
-      flex-wrap: wrap;
-      gap: 10px;
-      justify-content: center;
-      transition: opacity 0.4s ease;
     }
 
-    /* Buttons */
+    /* Try on Jewellery - Bottom Left */
+    #tryJewelsBtn {
+      position: absolute;
+      bottom: 20px;
+      left: 20px;
+      opacity: 0;
+      pointer-events: none;
+      z-index: 100;
+    }
+
+    /* Savings Plan - Bottom Center */
+    #savingsBtn {
+      position: absolute;
+      bottom: 20px;
+      left: 80%;
+      transform: translateX(-50%);
+      opacity: 0;
+      pointer-events: none;
+      z-index: 100;
+    }
+
+    /* Location - Top Right */
+    #locationBtn {
+      position: absolute;
+      top: 20px;
+      right: 20px;
+      opacity: 0;
+      pointer-events: none;
+      z-index: 100;
+    }
+
+    /* Buttons Style */
     .plan-button {
-      padding: 12px 20px;
-      font-size: 15px;
+      padding: 14px 22px;
+      font-size: 18px;
       font-weight: bold;
       border: none;
-      border-radius: 8px;
-      background-color: rgba(0, 0, 0, 0.3); /* black with 30% transparency */
+      border-radius: 10px;
+      background-color: rgba(0, 0, 0, 0.5); /* ⬅️ Increased from 0.3 to 0.5 */
       color: #fff;
       cursor: pointer;
-      min-width: 160px;
       transition: background 0.3s;
+      white-space: nowrap;
     }
 
     .plan-button:hover {
-      background-color: rgba(0, 0, 0, 0.5); /* slightly darker on hover */
-    }
-
-    /* Play button on top */
-    #toggleButton {
-      flex-basis: 100%; /* Moves play button above other buttons */
-      margin-bottom: 8px; /* Small gap below it */
+      background-color: rgba(0, 0, 0, 0.7);
     }
 
     /* WhatsApp Floating Button */
     #whatsappBtn {
       position: fixed;
-      bottom: 20px;
+      bottom: 80px;  /* ⬅️ moved up from 20px */
       right: 20px;
       background-color: #25D366;
       border-radius: 50%;
@@ -84,7 +104,7 @@
       justify-content: center;
       align-items: center;
       cursor: pointer;
-      z-index: 150;
+      z-index: 130;
       box-shadow: 0 2px 8px rgba(0,0,0,0.3);
       transition: opacity 0.4s ease;
     }
@@ -94,9 +114,22 @@
       height: 30px;
     }
 
-    /* Hide VR button */
     .a-enter-vr-button {
       display: none !important;
+    }
+
+    /* 📱 Responsive Adjustments */
+    @media (max-width: 480px) {
+      .plan-button {
+        padding: 12px 18px;
+        font-size: 16px;
+      }
+      #tryJewelsBtn {
+        left: 10px;
+      }
+      #locationBtn {
+        right: 10px;
+      }
     }
   </style>
 </head>
@@ -105,13 +138,23 @@
   <!-- Logo -->
   <img src="logo.png" id="logo" alt="Logo">
 
-  <!-- Buttons Panel -->
-  <div class="button-panel" id="planButtons">
-    <button class="plan-button" id="toggleButton">▶️ Play Video</button>
-    <button class="plan-button" onclick="window.location.href=' https://jewels-ai.github.io/Jewellery_Demo/'">🌟 Try Our Jewels</button>
-    <button class="plan-button" onclick="window.open('https://maps.google.com/?q=Your+Store+Location')">📍 Location</button>
-    <button class="plan-button" onclick="window.open('https://jewels-ai.github.io/savings-plan/')">Savings Plan</button>
-  </div>
+  <!-- Play Video -->
+  <button class="plan-button" id="toggleButton">▶️ Play Video</button>
+
+  <!-- Try on Jewellery (Bottom Left) -->
+  <button class="plan-button" id="tryJewelsBtn" onclick="window.location.href='https://jewels-ai.github.io/Jewellery_Demo/'">
+    🌟 Try on Jewellery
+  </button>
+
+  <!-- Savings Plan (Bottom Center) -->
+  <button class="plan-button" id="savingsBtn" onclick="window.open('https://jewels-ai.github.io/savings-plan/')">
+    💰 Savings Plan
+  </button>
+
+  <!-- Location (Top Right) -->
+  <button class="plan-button" id="locationBtn" onclick="window.open('https://maps.google.com/?q=Your+Store+Location')">
+    📍 Location
+  </button>
 
   <!-- WhatsApp Floating Button -->
   <div id="whatsappBtn" onclick="window.open('https://wa.me/917019743880','_blank')">
@@ -132,7 +175,6 @@
 
     <a-camera position="0 0 0" look-controls="enabled: false"></a-camera>
 
-    <!-- Image Target -->
     <a-entity id="target1" mindar-image-target="targetIndex: 0">
       <a-plane
         id="videoDisplay"
@@ -147,37 +189,31 @@
   <script>
     const videoDisplay = document.querySelector('#videoDisplay');
     const videoEl = document.querySelector('#plan1Video');
-    const buttonsContainer = document.querySelector('#planButtons');
+
     const toggleButton = document.querySelector('#toggleButton');
-    const target = document.querySelector('#target1');
+    const tryJewelsBtn = document.querySelector('#tryJewelsBtn');
+    const savingsBtn = document.querySelector('#savingsBtn');
+    const locationBtn = document.querySelector('#locationBtn');
     const whatsappBtn = document.querySelector('#whatsappBtn');
     const logo = document.querySelector('#logo');
+    const target = document.querySelector('#target1');
 
     let isPlaying = false;
 
-    // ✅ Show elements only when target is found
+    // ✅ Show elements when target found
     target.addEventListener('targetFound', () => {
-      buttonsContainer.style.opacity = '1';
-      buttonsContainer.style.pointerEvents = 'auto';
-
-      whatsappBtn.style.opacity = '1';
-      whatsappBtn.style.pointerEvents = 'auto';
-
-      logo.style.opacity = '1';
-      logo.style.pointerEvents = 'auto';
+      [toggleButton, tryJewelsBtn, savingsBtn, locationBtn, whatsappBtn, logo].forEach(el => {
+        el.style.opacity = '1';
+        el.style.pointerEvents = 'auto';
+      });
     });
 
-    // ❌ Hide elements when target is lost
+    // ❌ Hide elements when target lost
     target.addEventListener('targetLost', () => {
-      buttonsContainer.style.opacity = '0';
-      buttonsContainer.style.pointerEvents = 'none';
-
-      whatsappBtn.style.opacity = '0';
-      whatsappBtn.style.pointerEvents = 'none';
-
-      logo.style.opacity = '0';
-      logo.style.pointerEvents = 'none';
-
+      [toggleButton, tryJewelsBtn, savingsBtn, locationBtn, whatsappBtn, logo].forEach(el => {
+        el.style.opacity = '0';
+        el.style.pointerEvents = 'none';
+      });
       videoEl.pause();
       isPlaying = false;
       toggleButton.textContent = "▶️ Play Video";
@@ -197,11 +233,9 @@
       }
     });
 
-    // 🚫 Disable right click
-    document.addEventListener("contextmenu", (e) => e.preventDefault());
-
-    // 🚫 Disable inspect element
-    document.addEventListener("keydown", (e) => {
+    // Disable right click & dev tools
+    document.addEventListener("contextmenu", e => e.preventDefault());
+    document.addEventListener("keydown", e => {
       if (
         e.key === "F12" ||
         (e.ctrlKey && e.shiftKey && e.key === "I") ||
